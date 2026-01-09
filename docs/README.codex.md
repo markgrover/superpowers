@@ -85,6 +85,17 @@ description: Use when [condition] - [what it does]
 
 Personal skills override superpowers skills with the same name.
 
+### Custom Slash command
+Create a custom slash command under `~/.codex/prompts/superpowers.md` so you don't have to type `Run ....superpowers-codex` every time.
+```markdown
+---
+description: Expands the superpowers command
+---
+Run ~/.codex/superpowers/.codex/superpowers-codex $ARGUMENTS
+```
+
+Restart your codex session to run the custom slash command with the appropriate command (e.g. bootstrap) as `/prompts:superpowers bootstrap`.
+
 ## Architecture
 
 ### Codex CLI Tool
