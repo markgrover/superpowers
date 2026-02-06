@@ -39,6 +39,8 @@ Stop. Don't proceed to Step 2.
 
 ### Step 2: Determine Base Branch
 
+If the user specified a base branch (e.g., "alpha"), use that. Otherwise:
+
 ```bash
 # Try common base branches
 git merge-base HEAD main 2>/dev/null || git merge-base HEAD master 2>/dev/null
@@ -65,7 +67,7 @@ Which option?
 
 ### Step 4: Execute Choice
 
-#### Option 1: Merge Locally
+#### Option 1: Merge Locally (squash)
 
 ```bash
 # Switch to base branch
@@ -74,8 +76,12 @@ git checkout <base-branch>
 # Pull latest
 git pull
 
-# Merge feature branch
-git merge <feature-branch>
+# Squash-merge feature branch
+git merge --squash <feature-branch>
+
+# Commit with session id
+# If session id is unknown, use "session: unknown"
+git commit -m "<summary> (session: <SESSION_ID>)"
 
 # Verify tests on merged result
 <test command>
