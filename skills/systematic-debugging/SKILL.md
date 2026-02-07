@@ -169,6 +169,11 @@ You MUST complete each phase before proceeding to the next.
 
 ### Phase 4: Implementation
 
+**Worktree guard (before any code changes):**
+```
+If not in a worktree, use superpowers:using-git-worktrees to create one and move into it.
+```
+
 **Fix the root cause, not the symptom:**
 
 1. **Create Failing Test Case**
@@ -188,6 +193,15 @@ You MUST complete each phase before proceeding to the next.
    - Test passes now?
    - No other tests broken?
    - Issue actually resolved?
+
+4. **If code changes were made**
+   - Create a review checkpoint commit in the worktree:
+     ```bash
+     git status --porcelain
+     git add -A
+     git commit -m "Review checkpoint: <summary>"
+     ```
+   - Then invoke `superpowers:requesting-code-review` and `superpowers:receiving-code-review`.
 
 4. **If Fix Doesn't Work**
    - STOP
