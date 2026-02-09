@@ -13,6 +13,12 @@ Git worktrees create isolated workspaces sharing the same repository, allowing w
 
 **Announce at start:** "I'm using the using-git-worktrees skill to set up an isolated workspace."
 
+## User Override (No Worktree)
+
+If the user explicitly says **no worktree**, **stay on the current branch**, or **work directly on `<branch>`**, do **not** create a worktree.
+
+**Required response:** Acknowledge the instruction and proceed in-place. You may briefly note the tradeoff, but you must comply unless the user changes their mind.
+
 ## Directory Selection Process
 
 Follow this priority order:
@@ -149,6 +155,7 @@ Ready to implement <feature-name>
 | `worktrees/` exists | Use it (verify ignored) |
 | Both exist | Use `.worktrees/` |
 | Neither exists | Check CLAUDE.md → Ask user |
+| User says "no worktree" | Skip worktree, proceed in current branch |
 | Directory not ignored | Add to .gitignore + commit |
 | Tests fail during baseline | Report failures + ask |
 | No package.json/Cargo.toml | Skip dependency install |
@@ -199,6 +206,7 @@ Ready to implement auth feature
 - Proceed with failing tests without asking
 - Assume directory location when ambiguous
 - Skip CLAUDE.md check
+- Create a worktree after an explicit user request to avoid it
 
 **Always:**
 - Follow directory priority: existing > CLAUDE.md > ask
