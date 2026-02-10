@@ -23,6 +23,27 @@ This is not negotiable. This is not optional. You cannot rationalize your way ou
 
 **Invoke relevant or requested skills BEFORE any response or action.** Even a 1% chance a skill might apply means that you should invoke the skill to check. If an invoked skill turns out to be wrong for the situation, you don't need to use it.
 
+## Early Routing Rule: Worktrees Before Edits/Builds
+
+If the user request implies any of:
+- file edits (`apply_patch`, refactors, config changes)
+- running heavyweight project commands (examples: `xcodebuild`, `swift test`, `npm test`, linters/formatters)
+- git history changes (commit, merge, rebase, cherry-pick)
+
+Then you MUST invoke `using-git-worktrees` before:
+- the first file edit, and
+- the first heavyweight project command (especially `xcodebuild`).
+
+**Exception:** If the user explicitly says "no worktree", "stay on this branch", or "work directly in <branch>", do not create a worktree.
+
+**Wrong-repo guard:** Before running git operations or editing code, verify you are in the intended git repo:
+```bash
+git rev-parse --show-toplevel
+```
+If this fails, stop and ask for the correct repo path before proceeding.
+
+**Generated-file guard (XcodeGen/Xcode projects):** If the repo uses XcodeGen (e.g., `project.yml` + `xcodegen`), treat `*.xcodeproj/project.pbxproj` as generated. Prefer editing the project spec and regenerating; do not hand-edit `.pbxproj` unless the user explicitly asks.
+
 ```dot
 digraph skill_flow {
     "User message received" [shape=doublecircle];
