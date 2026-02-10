@@ -15,7 +15,7 @@ Git worktrees create isolated workspaces sharing the same repository, allowing w
 
 ## Preflight Guard (No File Edits Before Worktree)
 
-If the user wants a worktree, do **not** make any file edits (including `apply_patch`) until:
+Unless the user explicitly says **no worktree**, do **not** make any file edits (including `apply_patch`) until:
 1. The worktree has been created.
 2. `pwd` is inside the worktree directory you just created.
 
@@ -44,7 +44,7 @@ ls -d worktrees 2>/dev/null      # Alternative
 ### 2. Check CLAUDE.md
 
 ```bash
-grep -i "worktree.*director" CLAUDE.md 2>/dev/null
+grep -i "worktree.*directory" CLAUDE.md 2>/dev/null
 ```
 
 **If preference specified:** Use it without asking.
