@@ -13,6 +13,14 @@ Git worktrees create isolated workspaces sharing the same repository, allowing w
 
 **Announce at start:** "I'm using the using-git-worktrees skill to set up an isolated workspace."
 
+## Preflight Guard (No File Edits Before Worktree)
+
+If the user wants a worktree, do **not** make any file edits (including `apply_patch`) until:
+1. The worktree has been created.
+2. `pwd` is inside the worktree directory you just created.
+
+Practical rule: create the worktree first, `cd` into it, then continue work.
+
 ## User Override (No Worktree)
 
 If the user explicitly says **no worktree**, **stay on the current branch**, or **work directly on `<branch>`**, do **not** create a worktree.
@@ -166,6 +174,31 @@ Ready to implement <feature-name>
 
 - **Problem:** Worktree contents get tracked, pollute git status
 - **Fix:** Always use `git check-ignore` before creating project-local worktree
+
+### Starting work outside the worktree (recovery)
+
+- **Problem:** Changes were made in the main checkout before the worktree existed.
+- **Fix:** Stash (include untracked), create the worktree, pop the stash in the worktree, then verify the main checkout is clean.
+
+```bash
+# In the main checkout (where the accidental edits happened)
+git status --porcelain
+
+git stash push -u -m "move-into-worktree"
+git worktree add .worktrees/<branch-name> -b <branch-name>
+
+cd .worktrees/<branch-name>
+git stash pop
+
+# Verify: main checkout clean, worktree has the edits, and no leftover stash
+cd "$(git rev-parse --show-toplevel)"
+git status --porcelain
+
+cd .worktrees/<branch-name>
+git status --porcelain
+
+git stash list
+```
 
 ### Assuming directory location
 
