@@ -42,7 +42,14 @@ git rev-parse --show-toplevel
 ```
 If this fails, stop and ask for the correct repo path before proceeding.
 
+**Review-scope guard:** When requesting code review (or spawning a review subagent), always include:
+- absolute repo/worktree path
+- explicit commit range (`BASE_SHA..HEAD_SHA`)
+
+Prefer the active worktree path over the primary checkout path. If a worktree exists for the branch, do not send review requests scoped only to the main checkout.
+
 **Generated-file guard (XcodeGen/Xcode projects):** If the repo uses XcodeGen (e.g., `project.yml` + `xcodegen`), treat `*.xcodeproj/project.pbxproj` as generated. Prefer editing the project spec and regenerating; do not hand-edit `.pbxproj` unless the user explicitly asks.
+If `check-xcodegen` (or equivalent) fails twice with the same signature, stop retry loops and switch to systematic debugging.
 
 ```dot
 digraph skill_flow {

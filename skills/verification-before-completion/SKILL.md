@@ -48,6 +48,7 @@ Skip any step = lying, not verifying
 | Regression test works | Red-green cycle verified | Test passes once |
 | Agent completed | VCS diff shows changes | Agent reports "success" |
 | Requirements met | Line-by-line checklist | Tests passing |
+| XcodeGen repo ready to commit | `tools/check-xcodegen.sh` (or repo equivalent) passes cleanly | Re-running commit until hook passes |
 
 ## Red Flags - STOP
 
@@ -59,6 +60,7 @@ Skip any step = lying, not verifying
 - Thinking "just this once"
 - Tired and wanting work over
 - **ANY wording implying success without having run verification**
+- Repeating the same failing verification command without new diagnosis
 
 ## Rationalization Prevention
 
@@ -93,6 +95,13 @@ Skip any step = lying, not verifying
 ❌ "Linter passed" (linter doesn't check compilation)
 ```
 
+**XcodeGen repos:**
+```
+✅ Run generator consistency check (e.g. tools/check-xcodegen.sh) before commit claims
+✅ Verify no unexpected generated-file drift remains
+❌ Re-trying commit hooks repeatedly without diagnosing recurring check-xcodegen failure
+```
+
 **Requirements:**
 ```
 ✅ Re-read plan → Create checklist → Verify each → Report gaps or completion
@@ -123,6 +132,10 @@ From 24 failure memories:
 - Committing, PR creation, task completion
 - Moving to next task
 - Delegating to agents
+
+**Additionally before "ready to commit" in XcodeGen repos:**
+- Run the project generator consistency check (`tools/check-xcodegen.sh` or repo equivalent).
+- If the same check fails twice with the same error signature, stop retrying and switch to root-cause debugging.
 
 **Rule applies to:**
 - Exact phrases

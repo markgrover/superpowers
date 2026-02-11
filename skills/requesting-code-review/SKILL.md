@@ -23,13 +23,22 @@ Dispatch superpowers:code-reviewer subagent to catch issues before they cascade.
 
 ## How to Request
 
-**1. Get git SHAs:**
+**1. Set review scope (required):**
+```bash
+REPO_PATH=$(git rev-parse --show-toplevel)
+BASE_SHA=$(git rev-parse HEAD~1)   # or chosen base
+HEAD_SHA=$(git rev-parse HEAD)
+```
+
+If working in a feature worktree, use that worktree path as `REPO_PATH` (not the primary checkout path).
+
+**2. Get git SHAs:**
 ```bash
 BASE_SHA=$(git rev-parse HEAD~1)  # or origin/main
 HEAD_SHA=$(git rev-parse HEAD)
 ```
 
-**2. Dispatch code-reviewer subagent:**
+**3. Dispatch code-reviewer subagent:**
 
 Use Task tool with superpowers:code-reviewer type, fill template at `code-reviewer.md`
 
@@ -38,9 +47,10 @@ Use Task tool with superpowers:code-reviewer type, fill template at `code-review
 - `{PLAN_OR_REQUIREMENTS}` - What it should do
 - `{BASE_SHA}` - Starting commit
 - `{HEAD_SHA}` - Ending commit
+- `{REPO_PATH}` - Absolute repository/worktree path to review
 - `{DESCRIPTION}` - Brief summary
 
-**3. Act on feedback:**
+**4. Act on feedback:**
 - Fix Critical issues immediately
 - Fix Important issues before proceeding
 - Note Minor issues for later
@@ -57,6 +67,7 @@ BASE_SHA=$(git log --oneline | grep "Task 1" | head -1 | awk '{print $1}')
 HEAD_SHA=$(git rev-parse HEAD)
 
 [Dispatch superpowers:code-reviewer subagent]
+  REPO_PATH: /abs/path/to/worktree
   WHAT_WAS_IMPLEMENTED: Verification and repair functions for conversation index
   PLAN_OR_REQUIREMENTS: Task 2 from docs/plans/deployment-plan.md
   BASE_SHA: a7981ec
@@ -96,6 +107,8 @@ You: [Fix progress indicators]
 - Ignore Critical issues
 - Proceed with unfixed Important issues
 - Argue with valid technical feedback
+- Launch review without explicit `REPO_PATH` and `BASE_SHA..HEAD_SHA`
+- Default review scope to main checkout when the work was done in a worktree
 
 **If reviewer wrong:**
 - Push back with technical reasoning
