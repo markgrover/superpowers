@@ -92,6 +92,13 @@ Which option?
 
 #### Option 1: Merge Locally (squash)
 
+Before committing the squash:
+- If this branch resolves Sentry issue(s) and base branch is `alpha` or `v2`, require issue short ID(s) in the subject.
+- If short ID(s) are missing, ask once:
+  `Provide Sentry short ID(s) for squash subject (e.g., HOPS-IOS-6D or HOPS-IOS-6D,HOPS-IOS-6F).`
+- Subject format for Sentry fixes:
+  `<HOPS-IOS IDs>: <summary> (session: ${SESSION_ID})`
+
 ```bash
 # Rebase feature branch on local base branch (in the feature branch worktree)
 # Use rebase-before-merge (honor test choice)
@@ -104,6 +111,7 @@ git merge --squash <feature-branch>
 
 # Commit with session id (prefer $CODEX_THREAD_ID)
 SESSION_ID="${CODEX_THREAD_ID:-unknown}"
+# For Sentry fixes on alpha/v2: use "<HOPS-IOS IDs>: <summary> (session: ${SESSION_ID})"
 git commit -m "<summary> (session: ${SESSION_ID})"
 ```
 
@@ -210,6 +218,10 @@ If cleanup fails with policy/sandbox rejection (for example `blocked by policy` 
 - **Problem:** Squash merge hides conflicts or reintroduces stale base changes
 - **Fix:** Use `rebase-before-merge` to rebase and resolve conflicts before merging or creating a PR
 
+**Missing Sentry IDs in squash subject**
+- **Problem:** Sentry-related squash commit on `alpha`/`v2` lacks traceable issue ID(s)
+- **Fix:** Require `HOPS-IOS-*` prefix in the squash subject for Sentry fixes
+
 **Open-ended questions**
 - **Problem:** "What should I do next?" -> ambiguous
 - **Fix:** Present exactly 4 structured options
@@ -246,6 +258,7 @@ If cleanup fails with policy/sandbox rejection (for example `blocked by policy` 
 - Ask run vs waive before offering options
 - Rebase feature branch on the local base branch before merging or pushing a PR (use `rebase-before-merge`)
 - Verify tests **or** obtain explicit waiver response (`waive`) before offering options
+- For Sentry fixes merged to `alpha`/`v2`, include `HOPS-IOS-*` short ID(s) in the squash commit subject
 - Present exactly 4 options
 - Get typed confirmation for Option 4
 - Clean up worktree for Options 1 & 4 only
