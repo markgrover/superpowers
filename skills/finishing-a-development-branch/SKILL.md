@@ -92,6 +92,13 @@ Which option?
 
 #### Option 1: Merge Locally (squash)
 
+Before committing the squash:
+- If this branch resolves Sentry issue(s) and base branch is `alpha` or `v2`, require issue short ID(s) in the subject.
+- If short ID(s) are missing, ask once:
+  `Provide Sentry short ID(s) for squash subject (e.g., HOPS-IOS-6D or HOPS-IOS-6D,HOPS-IOS-6F).`
+- Subject format for Sentry fixes:
+  `<HOPS-IOS IDs>: <summary> (session: ${SESSION_ID})`
+
 ```bash
 # Rebase feature branch on local base branch (in the feature branch worktree)
 # Use rebase-before-merge (honor test choice)
@@ -104,13 +111,11 @@ git merge --squash <feature-branch>
 
 # Commit with session id (prefer $CODEX_THREAD_ID)
 SESSION_ID="${CODEX_THREAD_ID:-unknown}"
+# For Sentry fixes on alpha/v2: use "<HOPS-IOS IDs>: <summary> (session: ${SESSION_ID})"
 git commit -m "<summary> (session: ${SESSION_ID})"
-
-# Delete feature branch locally
-git branch -D <feature-branch>
 ```
 
-Then: Cleanup worktree (Step 5)
+Then: Cleanup worktree + branch (Step 5)
 
 #### Option 2: Push and Create PR
 
@@ -160,21 +165,37 @@ Wait for exact confirmation.
 If confirmed:
 ```bash
 git checkout <base-branch>
-git branch -D <feature-branch>
 ```
 
-Then: Cleanup worktree (Step 5)
+Then: Cleanup worktree + branch (Step 5)
 
-### Step 5: Cleanup Worktree
+### Step 5: Cleanup Worktree and Branch
 
 **For Options 1 and 4:**
 
-If there is a worktree for the feature branch, remove it:
+1) Identify feature-branch worktree path:
 ```bash
 git worktree list
+```
 
+2) Remove the worktree first (if present):
+```bash
 git worktree remove <worktree-path>
 ```
+
+3) Attempt branch cleanup once:
+```bash
+# Option 1 (merged branch): safe delete
+git branch -d <feature-branch>
+
+# Option 4 (discard): force delete
+git branch -D <feature-branch>
+```
+
+If cleanup fails with policy/sandbox rejection (for example `blocked by policy` or `Rejected(`):
+- Stop retrying immediately.
+- Report cleanup as deferred.
+- Provide exact manual cleanup commands to the user.
 
 **For Options 2 and 3:** Keep worktree.
 
@@ -197,6 +218,10 @@ git worktree remove <worktree-path>
 - **Problem:** Squash merge hides conflicts or reintroduces stale base changes
 - **Fix:** Use `rebase-before-merge` to rebase and resolve conflicts before merging or creating a PR
 
+**Missing Sentry IDs in squash subject**
+- **Problem:** Sentry-related squash commit on `alpha`/`v2` lacks traceable issue ID(s)
+- **Fix:** Require `HOPS-IOS-*` prefix in the squash subject for Sentry fixes
+
 **Open-ended questions**
 - **Problem:** "What should I do next?" -> ambiguous
 - **Fix:** Present exactly 4 structured options
@@ -208,6 +233,10 @@ git worktree remove <worktree-path>
 **Automatic worktree cleanup**
 - **Problem:** Remove worktree when might need it (Option 2, 3)
 - **Fix:** Only cleanup for Options 1 and 4
+
+**Retrying blocked cleanup commands**
+- **Problem:** Repeated destructive cleanup attempts can loop when policy blocks them
+- **Fix:** Attempt once, then mark cleanup deferred and provide manual commands
 
 **Editing generated Xcode project files (XcodeGen repos)**
 - **Problem:** Direct edits to `*.xcodeproj/project.pbxproj` drift from `project.yml` / generator output
@@ -223,14 +252,17 @@ git worktree remove <worktree-path>
 - Force-push without explicit request
 - Run `git pull` or rebase onto `origin/<branch>` without explicit user request
 - Hand-edit `*.xcodeproj/project.pbxproj` in XcodeGen-based repos
+- Retry cleanup delete commands after policy/sandbox rejection
 
 **Always:**
 - Ask run vs waive before offering options
 - Rebase feature branch on the local base branch before merging or pushing a PR (use `rebase-before-merge`)
 - Verify tests **or** obtain explicit waiver response (`waive`) before offering options
+- For Sentry fixes merged to `alpha`/`v2`, include `HOPS-IOS-*` short ID(s) in the squash commit subject
 - Present exactly 4 options
 - Get typed confirmation for Option 4
 - Clean up worktree for Options 1 & 4 only
+- Stop cleanup retries after a policy/sandbox block and report deferred cleanup explicitly
 
 ## Integration
 
