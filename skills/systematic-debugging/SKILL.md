@@ -201,16 +201,18 @@ If not in a worktree, use superpowers:using-git-worktrees to create one and move
      git add -A
      git commit -m "Review checkpoint: <summary>"
      ```
-   - Then invoke `superpowers:requesting-code-review` and `superpowers:receiving-code-review`.
+   - **REQUIRED:** invoke `superpowers:requesting-code-review` and `superpowers:receiving-code-review` before claiming completion.
+   - Skip review only if your human partner explicitly waives it.
+   - If review is waived, record `review waived by user` and the reason in your final handoff.
 
-4. **If Fix Doesn't Work**
+5. **If Fix Doesn't Work**
    - STOP
    - Count: How many fixes have you tried?
    - If < 3: Return to Phase 1, re-analyze with new information
-   - **If ≥ 3: STOP and question the architecture (step 5 below)**
+   - **If ≥ 3: STOP and question the architecture (step 6 below)**
    - DON'T attempt Fix #4 without architectural discussion
 
-5. **If 3+ Fixes Failed: Question Architecture**
+6. **If 3+ Fixes Failed: Question Architecture**
 
    **Pattern indicating architectural problem:**
    - Each fix reveals new shared state/coupling/problem in different place
@@ -226,6 +228,16 @@ If not in a worktree, use superpowers:using-git-worktrees to create one and move
 
    This is NOT a failed hypothesis - this is a wrong architecture.
 
+## Completion Gate
+
+Before claiming the issue is done, ALL must be true:
+
+1. Root cause evidence is documented.
+2. A failing test was observed first, or the reason a failing test is not possible is documented.
+3. The fix is verified by the required test scope.
+4. If code changed: review checkpoint commit exists and both `superpowers:requesting-code-review` + `superpowers:receiving-code-review` ran, unless the user explicitly waived review.
+5. Final handoff includes what was run, what passed/failed, and any waivers/blockers.
+
 ## Red Flags - STOP and Follow Process
 
 If you catch yourself thinking:
@@ -240,10 +252,11 @@ If you catch yourself thinking:
 - Proposing solutions before tracing data flow
 - **"One more fix attempt" (when already tried 2+)**
 - **Each fix reveals new problem in different place**
+- **"I'll skip review this once"** or "tests passing is enough"
 
 **ALL of these mean: STOP. Return to Phase 1.**
 
-**If 3+ fixes failed:** Question the architecture (see Phase 4.5)
+**If 3+ fixes failed:** Question the architecture (see Phase 4, step 6)
 
 ## your human partner's Signals You're Doing It Wrong
 
@@ -277,6 +290,15 @@ If you catch yourself thinking:
 | **2. Pattern** | Find working examples, compare | Identify differences |
 | **3. Hypothesis** | Form theory, test minimally | Confirmed or new hypothesis |
 | **4. Implementation** | Create test, fix, verify | Bug resolved, tests pass |
+
+## Final Checklist
+
+- [ ] Root cause evidence captured (errors, reproducer, relevant changes).
+- [ ] Failing test observed before fix, or limitation explicitly documented.
+- [ ] Minimal root-cause fix implemented and validated.
+- [ ] Required tests for affected scope passed.
+- [ ] Review skills run (`requesting-code-review` + `receiving-code-review`) or explicit user waiver recorded.
+- [ ] Completion statement matches evidence and notes remaining blockers/risks.
 
 ## When Process Reveals "No Root Cause"
 
