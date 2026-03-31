@@ -42,10 +42,11 @@ while [[ $# -gt 0 ]]; do
             echo "  --test, -t NAME    Run only the specified test"
             echo "  --help, -h         Show this help"
             echo ""
-            echo "Tests:"
-            echo "  test-plugin-loading.sh  Verify plugin installation and structure"
-            echo "  test-tools.sh           Test use_skill and find_skills tools (integration)"
-            echo "  test-priority.sh        Test skill priority resolution (integration)"
+echo "Tests:"
+echo "  test-plugin-loading.sh  Verify plugin installation and structure"
+echo "  test-session-start.sh   Verify SessionStart duplicate-skill warnings"
+echo "  test-tools.sh           Test use_skill and find_skills tools (integration)"
+echo "  test-priority.sh        Test skill priority resolution (integration)"
             exit 0
             ;;
         *)
@@ -59,6 +60,7 @@ done
 # List of tests to run (no external dependencies)
 tests=(
     "test-plugin-loading.sh"
+    "test-session-start.sh"
 )
 
 # Integration tests (require OpenCode)
